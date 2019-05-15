@@ -4,6 +4,7 @@
 #include "hidapi.h"
 
 #include <wchar.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -45,9 +46,9 @@ extern "C"
 
 	typedef struct {
 		short report_id;
-		short is_homed;
-		short is_homing;
-		short is_moving;
+		bool is_homed;
+		bool is_homing;
+		bool is_moving;
 		short position;
 		short error_state;
 	}wheel_status;
@@ -57,11 +58,10 @@ extern "C"
 	hsfw_wheel_info HSFW_EXPORT * HSFW_CALL enumerate_wheels();
 	void  HSFW_EXPORT HSFW_CALL wheels_free_enumeration(hsfw_wheel_info *wheels);
 
-	hsfw_wheel HSFW_EXPORT  * HSFW_CALL open_hsfw(unsigned short vendor_id, unsigned short product_id, const wchar_t *serial_number);
-
+	hsfw_wheel HSFW_EXPORT * HSFW_CALL open_hsfw(unsigned short vendor_id, unsigned short product_id, const wchar_t *serial_number);
 	void HSFW_EXPORT HSFW_CALL close_hsfw(hsfw_wheel* wheel);
-
 	void HSFW_EXPORT exit_hsfw();
+	int HSFW_EXPORT HSFW_CALL get_hsfw_status(hsfw_wheel* wheel, wheel_status* status);
 
 #ifdef __cplusplus
 }

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <HSFW.h>
+#include <stdlib.h> 
 
 int main()
 {
@@ -19,6 +20,17 @@ int main()
 	if (devs)
 	{
 		hsfw_wheel* wheel = open_hsfw(devs->vendor_id, devs->product_id, devs->serial_number);
+		if (wheel) {
+
+		}
+
+		wheel_status status;
+		if (get_hsfw_status(wheel, &status));
+
+		printf("%d",status.position);
+
+		close_hsfw(wheel);
+		exit_hsfw();
 	}
 	else
 	{
