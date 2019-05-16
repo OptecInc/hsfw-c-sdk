@@ -7,6 +7,7 @@ extern "C"
 #include <string.h>
 #include "HSFW.h"
 
+#define report_clear_error 2
 #define report_status 10
 #define report_description 11
 #define move_command 20
@@ -253,6 +254,20 @@ extern "C"
 
 		return 0;
 	}
+
+	int HSFW_EXPORT HSFW_CALL clear_error_hsfw(hsfw_wheel* wheel) {
+		if (verify_wheel_handle(wheel) != 0) {
+			return -1;
+		}
+
+		unsigned char clear_error[4] = { 0 };
+		clear_error[0] = report_clear_error;
+
+		int res = hid_send_output_report(wheel->handle, clear_error, sizeof(clear_error));
+
+		return 0;
+	}
+
 
 #ifdef __cplusplus
 } /* extern "C" */

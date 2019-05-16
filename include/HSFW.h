@@ -77,6 +77,8 @@ extern "C"
 	int HSFW_EXPORT HSFW_CALL home_hsfw(hsfw_wheel* wheel);
 	int HSFW_EXPORT HSFW_CALL move_hsfw(hsfw_wheel* wheel, unsigned short position);
 
+	int HSFW_EXPORT HSFW_CALL clear_error_hsfw(hsfw_wheel* wheel);
+
 #ifdef __cplusplus
 }
 #endif

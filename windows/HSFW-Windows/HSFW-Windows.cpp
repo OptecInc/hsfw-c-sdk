@@ -42,6 +42,10 @@ void main()
 			}
 			PrintStatus(&status);
 
+			if (status.error_state != 0) {
+				clear_error_hsfw(wheel);
+			}
+
 			wheel_description description;
 			if (get_hsfw_description(wheel, &description) < 0) {
 				printf("ERROR");
@@ -74,7 +78,7 @@ void main()
 
 
 			for (int i = description.filter_count; i > 0; i--) {
-				if (move_hsfw(wheel, 1)) {
+				if (move_hsfw(wheel, i)) {
 					printf("ERROR");
 					return;
 				}
