@@ -9,7 +9,9 @@ extern "C"
 
 #define report_status 10
 #define report_description 11
+#define move_command 20
 #define home_command 21
+
 
 #define report_true 255
 #define report_false 0
@@ -196,6 +198,55 @@ extern "C"
 
 		if (home_resp != report_true)
 			return -5;
+
+		if (error_resp != report_false)
+			return error_resp;
+
+		return 0;
+	}
+
+	int HSFW_EXPORT HSFW_CALL move_hsfw(hsfw_wheel* wheel, unsigned short position) {
+		if (verify_wheel_handle(wheel) != 0) {
+			return -1;
+		}
+
+		wheel_description description;
+
+		int res = get_hsfw_description(wheel, &description);
+
+		if (res)
+			return -2;
+
+		if (description.filter_count < position) {
+			return -3;
+		}
+
+		unsigned char movereport[14] = { 0 };
+		movereport[0] = move_command;
+
+		movereport[1] = position;
+
+		res = hid_send_feature_report(wheel->handle, movereport, sizeof(movereport));
+		if (!res)
+			return -4;
+
+		res = hid_get_feature_report(wheel->handle, movereport, sizeof(movereport));
+		if (!res)
+			return -5;
+
+		if (movereport[0] != move_command)
+			return -6;
+
+		unsigned char move_resp = movereport[1];
+
+		res = hid_get_feature_report(wheel->handle, movereport, sizeof(movereport));
+		if (!res)
+			return -7;
+
+		unsigned char error_resp = movereport[1];
+
+		if (move_resp != report_true)
+			return -8;
 
 		if (error_resp != report_false)
 			return error_resp;

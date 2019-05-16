@@ -8,6 +8,13 @@
 void PrintStatus(wheel_status* status);
 void PrintDescription(wheel_description* description);
 
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif // WIN32
+
+
 void main()
 {
 	hsfw_wheel_info *devs, *cur_dev;
@@ -51,6 +58,42 @@ void main()
 				printf("ERROR");
 				return;
 			}
+
+			while (status.is_homing) {
+				if (get_hsfw_status(wheel, &status) < 0) {
+					printf("ERROR");
+					return;
+				}
+				Sleep(10);
+			}
+
+			if (get_hsfw_description(wheel, &description) < 0) {
+				printf("ERROR");
+				return;
+			}
+
+
+			for (int i = description.filter_count; i > 0; i--) {
+				if (move_hsfw(wheel, 1)) {
+					printf("ERROR");
+					return;
+				}
+				if (get_hsfw_status(wheel, &status) < 0) {
+					printf("ERROR");
+					return;
+				}
+
+				while (status.is_moving) {
+					if (get_hsfw_status(wheel, &status) < 0) {
+						printf("ERROR");
+						return;
+					}
+					Sleep(10);
+				}
+
+			}
+
+
 			PrintStatus(&status);
 
 			close_hsfw(wheel);
