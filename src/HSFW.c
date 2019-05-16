@@ -12,6 +12,14 @@ extern "C"
 #define report_description 11
 #define move_command 20
 #define home_command 21
+#define flashops_command 22
+
+#define flash_set_defualt_names 1
+#define flash_update_filter_name 2
+#define flash_read_filter_name 3
+#define flash_update_wheel_name 4
+#define flash_read_wheel_name 5
+#define flash_update_centering_offset 6
 
 
 #define report_true 255
@@ -264,6 +272,71 @@ extern "C"
 		clear_error[0] = report_clear_error;
 
 		int res = hid_send_output_report(wheel->handle, clear_error, sizeof(clear_error));
+
+		return 0;
+	}
+
+	int HSFW_EXPORT HSFW_CALL read_wheel_names_hsfw(hsfw_wheel* wheel, hsfw_wheel_names* names) {
+		if (verify_wheel_handle(wheel) != 0) {
+			return -1;
+		}
+
+		wheel_description description;
+
+		int res = get_hsfw_description(wheel, &description);
+
+		if (res)
+			return -2;
+
+		int fversion = description.firmware_major * 100 + description.firmware_minor * 10 + description.firmware_revision;
+
+		int wheel_count = 8;
+
+		if (fversion > 100) {
+			wheel_count = 11;
+		}
+
+		for (int i = 0; i < wheel_count; i++)
+		{
+			unsigned char wheel_name_report[14] = { 0 };
+
+			wheel_name_report[0] = flashops_command;
+			wheel_name_report[1] = flash_read_wheel_name;
+			wheel_name_report[2] = 'A' + i;
+
+			// Send the initial report
+			res = hid_send_feature_report(wheel->handle, wheel_name_report, sizeof(wheel_name_report));
+			if (!res)
+				return -3;
+
+			res = hid_get_feature_report(wheel->handle, wheel_name_report, sizeof(wheel_name_report));
+			if (!res)
+				return -3;
+
+			unsigned char name_code1 = wheel_name_report[1];
+			unsigned char name_code2 = wheel_name_report[2];
+			unsigned char name_code3 = wheel_name_report[3];
+			unsigned char name_code4 = wheel_name_report[4];
+
+			res = hid_get_feature_report(wheel->handle, wheel_name_report, sizeof(wheel_name_report));
+			if (!res)
+				return -3;
+
+			if(!(name_code1 == wheel_name_report[1] && name_code1 == flash_read_wheel_name))
+				return -3;
+
+			if (!(name_code2 == wheel_name_report[2] && name_code2 == 0))
+				return -3;
+
+			if (!(name_code3 == wheel_name_report[3] && name_code3 == 'A' + i))
+				return -3;
+
+			if (!(name_code4 == wheel_name_report[4] && name_code4 == 0))
+				return -3;
+
+			memcpy(&(names->names[i][0]), &wheel_name_report[6], 8);
+			names->names[i][8] = 0;
+		}
 
 		return 0;
 	}

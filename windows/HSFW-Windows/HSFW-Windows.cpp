@@ -94,11 +94,15 @@ void main()
 					}
 					Sleep(10);
 				}
-
 			}
+			hsfw_wheel_names names;
 
+			int res = read_wheel_names_hsfw(wheel, &names);
 
-			PrintStatus(&status);
+			for (int i = 0; i < 11; i++) {
+				printf("Wheel: %c ", 'A' + i);
+				printf("%s\n",names.names[i]);
+			}
 
 			close_hsfw(wheel);
 			exit_hsfw();
@@ -122,7 +126,7 @@ void PrintDescription(wheel_description* description) {
 	printf("Report ID: %d\n", description->report_id);
 	printf("Firmware: V%d.%d.%d\n", description->firmware_major, description->firmware_minor, description->firmware_revision);
 	printf("Filter Count: %d\n", description->filter_count);
-	printf("Wheel ID: %d\n", description->wheel_id);
+	printf("Wheel ID: %c\n", description->wheel_id);
 	printf("Centering Offset: %d\n", description->centering_offset);
 }
 
