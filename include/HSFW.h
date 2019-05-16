@@ -53,6 +53,16 @@ extern "C"
 		short error_state;
 	}wheel_status;
 
+	typedef struct {
+		short report_id;
+		short firmware_major;
+		short firmware_minor;
+		short firmware_revision;
+		short filter_count;
+		char wheel_id;
+		short centering_offset;
+	}wheel_description;
+
 	typedef struct hsfw_wheel_info hsfw_wheel_info;
 
 	hsfw_wheel_info HSFW_EXPORT * HSFW_CALL enumerate_wheels();
@@ -62,6 +72,9 @@ extern "C"
 	void HSFW_EXPORT HSFW_CALL close_hsfw(hsfw_wheel* wheel);
 	void HSFW_EXPORT exit_hsfw();
 	int HSFW_EXPORT HSFW_CALL get_hsfw_status(hsfw_wheel* wheel, wheel_status* status);
+	int HSFW_EXPORT HSFW_CALL get_hsfw_description(hsfw_wheel* wheel, wheel_description* description);
+
+	int HSFW_EXPORT HSFW_CALL home_hsfw(hsfw_wheel* wheel);
 
 #ifdef __cplusplus
 }

@@ -5,39 +5,78 @@
 #include <HSFW.h>
 #include <stdlib.h> 
 
-int main()
+void PrintStatus(wheel_status* status);
+void PrintDescription(wheel_description* description);
+
+void main()
 {
 	hsfw_wheel_info *devs, *cur_dev;
 
 	devs = enumerate_wheels();
 	cur_dev = devs;
 	while (cur_dev) {
-		printf("Device Found\n  type: %04hx %04hx\n serial_number: %ls\n", cur_dev->vendor_id, cur_dev->product_id, cur_dev->serial_number);
+		printf("Device Found - type: %04hx %04hx serial_number: %ls\n",cur_dev->vendor_id, cur_dev->product_id, cur_dev->serial_number);
 
 		cur_dev = cur_dev->next;
 	}
 
+
+
 	if (devs)
 	{
 		hsfw_wheel* wheel = open_hsfw(devs->vendor_id, devs->product_id, devs->serial_number);
-		if (wheel) {
+		if (wheel > 0) {
 
+
+			wheel_status status;
+			if (get_hsfw_status(wheel, &status) < 0) {
+				printf("ERROR");
+				return;
+			}
+			PrintStatus(&status);
+
+			wheel_description description;
+			if (get_hsfw_description(wheel, &description) < 0) {
+				printf("ERROR");
+				return;
+			}
+			PrintDescription(&description);
+
+			if(home_hsfw(wheel)) {
+				printf("ERROR");
+				return;
+			}
+
+			if (get_hsfw_status(wheel, &status) < 0) {
+				printf("ERROR");
+				return;
+			}
+			PrintStatus(&status);
+
+			close_hsfw(wheel);
+			exit_hsfw();
 		}
 
-		wheel_status status;
-		if (get_hsfw_status(wheel, &status));
-
-		printf("%d",status.position);
-
-		close_hsfw(wheel);
-		exit_hsfw();
+		wheels_free_enumeration(devs);
 	}
-	else
-	{
+}
 
-	}
 
-    std::cout << "Hello World!\n"; 
+void PrintStatus(wheel_status* status) {
+	printf("Report ID: %d\n", status->report_id);
+	printf("Position: %d\n", status->position);
+	printf("Moving: %d\n", status->is_moving);
+	printf("Homed: %d\n", status->is_homed);
+	printf("Homing: %d\n", status->is_homing);
+	printf("Error: %d\n", status->error_state);
+}
+
+void PrintDescription(wheel_description* description) {
+	printf("Report ID: %d\n", description->report_id);
+	printf("Firmware: V%d.%d.%d\n", description->firmware_major, description->firmware_minor, description->firmware_revision);
+	printf("Filter Count: %d\n", description->filter_count);
+	printf("Wheel ID: %d\n", description->wheel_id);
+	printf("Centering Offset: %d\n", description->centering_offset);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

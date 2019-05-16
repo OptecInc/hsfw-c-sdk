@@ -8,6 +8,8 @@ extern "C"
 #include "HSFW.h"
 
 #define report_status 10
+#define report_description 11
+#define home_command 21
 
 #define report_true 255
 #define report_false 0
@@ -15,37 +17,36 @@ extern "C"
 	int verify_wheel_handle(hsfw_wheel* wheel);
 
 	hsfw_wheel_info HSFW_EXPORT * HSFW_CALL enumerate_wheels()
-    {
+	{
 		struct hid_device_info *devs, *cur_dev;
-        devs = hid_enumerate(HSFW_VID, HSFW_PID);
-        cur_dev = devs;
+		devs = hid_enumerate(HSFW_VID, HSFW_PID);
+		cur_dev = devs;
 		hsfw_wheel_info *root = NULL;
 		hsfw_wheel_info *cur = NULL;
-        while (cur_dev)
-        {
-			hsfw_wheel_info *tmp = (hsfw_wheel_info*) calloc(1, sizeof(struct hsfw_wheel_info));
+		while (cur_dev)
+		{
+			hsfw_wheel_info *tmp = (hsfw_wheel_info*)calloc(1, sizeof(struct hsfw_wheel_info) + 1);
 
-            tmp->product_id = cur_dev->product_id;
-            tmp->vendor_id = cur_dev->vendor_id;
+			tmp->product_id = cur_dev->product_id;
+			tmp->vendor_id = cur_dev->vendor_id;
 
 			tmp->serial_number = calloc(sizeof(cur_dev->serial_number) + 1, sizeof(cur_dev->serial_number[0]));
-			wcsncpy_s(tmp->serial_number, (sizeof(cur_dev->serial_number) + 1) * sizeof(cur_dev->serial_number[0]), cur_dev->serial_number, sizeof(cur_dev->serial_number) * sizeof(cur_dev->serial_number[0]));
+			tmp->serial_number = _wcsdup(cur_dev->serial_number);
+			if (cur)
+			{
+				cur->next = tmp;
+			}
+			else
+			{
+				root = tmp;
+			}
+			cur = tmp;
+			cur_dev = cur_dev->next;
+		}
+		hid_free_enumeration(devs);
 
-            if (cur)
-            {
-                cur->next = tmp;
-            }
-            else
-            {
-                root = tmp;
-            }
-            cur = tmp;
-            cur_dev = cur_dev->next;
-        }
-        hid_free_enumeration(devs);
-
-        return root;
-    }
+		return root;
+	}
 
 	void HSFW_EXPORT HSFW_CALL wheels_free_enumeration(hsfw_wheel_info *wheels)
 	{
@@ -66,15 +67,14 @@ extern "C"
 			return 0;
 		}
 
-		hsfw_wheel* wheel = (hsfw_wheel*)calloc(1, sizeof(hsfw_wheel));
+		hsfw_wheel* wheel = (hsfw_wheel*)calloc(1, sizeof(hsfw_wheel) + 1);
 
 		wheel->handle = handle;
 		wheel->vendor_id = vendor_id;
 		wheel->product_id = product_id;
 
-		serial_number = calloc(sizeof(serial_number) + 1, sizeof(serial_number[0]));
-		wcsncpy_s(serial_number, (sizeof(serial_number) + 1) * sizeof(serial_number[0]), serial_number, sizeof(serial_number)  * sizeof(serial_number[0]));
-
+		wheel->serial_number = calloc(sizeof(serial_number) + 1, sizeof(serial_number[0]));
+		wheel->serial_number = _wcsdup(serial_number);
 		return wheel;
 	}
 
@@ -133,7 +133,72 @@ extern "C"
 
 		status->error_state = raw_status[5];
 
-		memcpy(status, status, sizeof(wheel_status));
+		return 0;
+	}
+
+	int HSFW_EXPORT HSFW_CALL get_hsfw_description(hsfw_wheel* wheel, wheel_description* description) {
+		if (verify_wheel_handle(wheel) != 0) {
+			return -1;
+		}
+
+		unsigned char raw_status[8] = { 0 };
+		raw_status[0] = report_description;
+
+		int res = hid_get_input_report(wheel->handle, raw_status, sizeof(raw_status));
+
+		if (!res)
+			return -2;
+
+		if (raw_status[0] != report_description)
+			return -3;
+		description->report_id = raw_status[0];
+
+		description->firmware_major = raw_status[1];
+		description->firmware_minor = raw_status[2];
+		description->firmware_revision = raw_status[3];
+
+		if (raw_status[4] < 5 || raw_status[4] > 9)
+			return -3;
+		description->filter_count = raw_status[4];
+
+		description->wheel_id = (char)raw_status[5];
+		description->centering_offset = raw_status[6];
+
+		return 0;
+	}
+
+	int HSFW_EXPORT HSFW_CALL home_hsfw(hsfw_wheel* wheel) {
+		if (verify_wheel_handle(wheel) != 0) {
+			return -1;
+		}
+
+		unsigned char homereport[14] = { 0 };
+		homereport[0] = home_command;
+
+		int res = hid_send_feature_report(wheel->handle, homereport, sizeof(homereport));
+		if (!res)
+			return -1;
+
+		res = hid_get_feature_report(wheel->handle, homereport, sizeof(homereport));
+		if (!res) 
+			return -2;
+
+		if (homereport[0] != home_command)
+			return -3;
+
+		unsigned char home_resp = homereport[1];
+
+		res = hid_get_feature_report(wheel->handle, homereport, sizeof(homereport));
+		if (!res)
+			return -4;
+
+		unsigned char error_resp = homereport[1];
+
+		if (home_resp != report_true)
+			return -5;
+
+		if (error_resp != report_false)
+			return error_resp;
 
 		return 0;
 	}
