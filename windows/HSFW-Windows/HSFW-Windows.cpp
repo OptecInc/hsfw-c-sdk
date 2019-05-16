@@ -96,12 +96,20 @@ void main()
 				}
 			}
 			hsfw_wheel_names names;
+			hsfw_wheel_filters filters;
 
 			int res = read_wheel_names_hsfw(wheel, &names);
 
 			for (int i = 0; i < 11; i++) {
-				printf("Wheel: %c ", 'A' + i);
-				printf("%s\n",names.names[i]);
+				printf("Wheel: %c %s\n", 'A' + i, names.names[i]);
+
+
+
+				res = read_filter_names_hsfw(wheel, 'A' + i, &filters);
+
+				for (int j = 0; j < 8; j++) {
+					printf("\t Filter %d: - %s\n", j + 1, filters.names[j]);
+				}
 			}
 
 			close_hsfw(wheel);

@@ -49,6 +49,10 @@ extern "C"
 	}hsfw_wheel_names;
 
 	typedef struct {
+		char names[8][9];
+	}hsfw_wheel_filters;
+
+	typedef struct {
 		short report_id;
 		bool is_homed;
 		bool is_homing;
@@ -82,6 +86,7 @@ extern "C"
 	int HSFW_EXPORT HSFW_CALL move_hsfw(hsfw_wheel* wheel, unsigned short position);
 
 	int HSFW_EXPORT HSFW_CALL read_wheel_names_hsfw(hsfw_wheel* wheel, hsfw_wheel_names* names);
+	int HSFW_EXPORT HSFW_CALL read_filter_names_hsfw(hsfw_wheel* wheel, char wheel_id, hsfw_wheel_filters* filters);
 
 	int HSFW_EXPORT HSFW_CALL clear_error_hsfw(hsfw_wheel* wheel);
 

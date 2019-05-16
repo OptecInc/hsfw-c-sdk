@@ -277,6 +277,8 @@ extern "C"
 	}
 
 	int HSFW_EXPORT HSFW_CALL read_wheel_names_hsfw(hsfw_wheel* wheel, hsfw_wheel_names* names) {
+
+		memset(names->names, 0, sizeof(names->names));
 		if (verify_wheel_handle(wheel) != 0) {
 			return -1;
 		}
@@ -336,6 +338,83 @@ extern "C"
 
 			memcpy(&(names->names[i][0]), &wheel_name_report[6], 8);
 			names->names[i][8] = 0;
+		}
+
+		return 0;
+	}
+
+	int HSFW_EXPORT HSFW_CALL read_filter_names_hsfw(hsfw_wheel* wheel, char wheel_id, hsfw_wheel_filters* filters) {
+		memset(filters->names, 0, sizeof(filters->names));
+		if (verify_wheel_handle(wheel) != 0) {
+			return -1;
+	}
+
+		wheel_description description;
+
+		int res = get_hsfw_description(wheel, &description);
+
+		if (res)
+			return -2;
+
+		int fversion = description.firmware_major * 100 + description.firmware_minor * 10 + description.firmware_revision;
+
+		int filter_count = 8;
+
+		if (wheel_id < 'A' || wheel_id > 'K')
+			return -2;
+
+		if (!(fversion > 100)) {
+			if (wheel_id > 'H') {
+				return -2;
+			}
+		}
+
+		if (wheel_id <= 'E')
+			filter_count = 5;
+
+		if (wheel_id >= 'I')
+			filter_count = 7;
+
+		for (int i = 0; i < filter_count; i++)
+		{
+			unsigned char filter_name_report[14] = { 0 };
+
+			filter_name_report[0] = flashops_command;
+			filter_name_report[1] = flash_read_filter_name;
+			filter_name_report[2] = wheel_id;
+			filter_name_report[3] = i + 1;
+
+			// Send the initial report
+			res = hid_send_feature_report(wheel->handle, filter_name_report, sizeof(filter_name_report));
+			if (!res)
+				return -3;
+
+			res = hid_get_feature_report(wheel->handle, filter_name_report, sizeof(filter_name_report));
+			if (!res)
+				return -3;
+
+			unsigned char name_code1 = filter_name_report[1];
+			unsigned char name_code2 = filter_name_report[2];
+			unsigned char name_code3 = filter_name_report[3];
+			unsigned char name_code4 = filter_name_report[4];
+
+			res = hid_get_feature_report(wheel->handle, filter_name_report, sizeof(filter_name_report));
+			if (!res)
+				return -3;
+
+			if (!(name_code1 == filter_name_report[1] && name_code1 == flash_read_filter_name))
+				return -3;
+
+			if (!(name_code2 == filter_name_report[2] && name_code2 == 0))
+				return -3;
+
+			if (!(name_code3 == filter_name_report[3] && name_code3 == wheel_id))
+				return -3;
+
+			if (!(name_code4 == filter_name_report[4] && name_code4 == i + 1))
+				return -3;
+			memcpy(&(filters->names[i][0]), &filter_name_report[6], 8);
+			filters->names[i][8] = 0;
 		}
 
 		return 0;
