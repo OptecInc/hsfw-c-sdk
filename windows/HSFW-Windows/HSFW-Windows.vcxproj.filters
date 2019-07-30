@@ -18,7 +18,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HSFW-Windows.cpp">
+    <ClCompile Include="hsfw-app.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

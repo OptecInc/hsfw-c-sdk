@@ -21,15 +21,15 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\HSFW.h">
+    <ClInclude Include="..\..\hidapi\hidapi\hidapi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\hidapi\hidapi\hidapi.h">
+    <ClInclude Include="..\..\include\libhsfw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\HSFW.c">
+    <ClCompile Include="..\..\src\libhsfw.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

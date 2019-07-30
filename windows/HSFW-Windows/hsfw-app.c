@@ -1,8 +1,9 @@
 // HSFW-Windows.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include <iostream>
-#include <HSFW.h>
+
+#include "libhsfw.h"
+#include <stdio.h> 
 #include <stdlib.h> 
 
 void PrintStatus(wheel_status* status);
@@ -15,7 +16,7 @@ void PrintDescription(wheel_description* description);
 #endif // WIN32
 
 
-void main()
+int main()
 {
 	hsfw_wheel_info *devs, *cur_dev;
 
@@ -27,18 +28,16 @@ void main()
 		cur_dev = cur_dev->next;
 	}
 
-
-
-	if (devs)
+	if (devs != NULL)
 	{
+
 		hsfw_wheel* wheel = open_hsfw(devs->vendor_id, devs->product_id, devs->serial_number);
 		if (wheel > 0) {
-
 
 			wheel_status status;
 			if (get_hsfw_status(wheel, &status) < 0) {
 				printf("ERROR");
-				return;
+				return 0;
 			}
 			PrintStatus(&status);
 
@@ -49,50 +48,58 @@ void main()
 			wheel_description description;
 			if (get_hsfw_description(wheel, &description) < 0) {
 				printf("ERROR");
-				return;
+				return 0;
 			}
 			PrintDescription(&description);
 
 			if(home_hsfw(wheel)) {
 				printf("ERROR");
-				return;
+				return 0;
 			}
 
 			if (get_hsfw_status(wheel, &status) < 0) {
 				printf("ERROR");
-				return;
+				return 0;
 			}
 
 			while (status.is_homing) {
 				if (get_hsfw_status(wheel, &status) < 0) {
 					printf("ERROR");
-					return;
+					return 0;
 				}
-				Sleep(10);
+				#ifdef WIN32
+					Sleep(10);
+				#else
+					usleep(10000);
+				#endif
 			}
 
 			if (get_hsfw_description(wheel, &description) < 0) {
 				printf("ERROR");
-				return;
+				return 0;
 			}
 
 
 			for (int i = description.filter_count; i > 0; i--) {
 				if (move_hsfw(wheel, i)) {
 					printf("ERROR");
-					return;
+					return 0;
 				}
 				if (get_hsfw_status(wheel, &status) < 0) {
 					printf("ERROR");
-					return;
+					return 0;
 				}
 
 				while (status.is_moving) {
 					if (get_hsfw_status(wheel, &status) < 0) {
 						printf("ERROR");
-						return;
+						return 0;
 					}
+					#ifdef WIN32
 					Sleep(10);
+					#else
+					usleep(10000);
+					#endif
 				}
 			}
 			hsfw_wheel_names names;
@@ -114,6 +121,9 @@ void main()
 
 			close_hsfw(wheel);
 			exit_hsfw();
+		}
+		else{
+			printf("ERROR, could not open wheel");
 		}
 
 		wheels_free_enumeration(devs);

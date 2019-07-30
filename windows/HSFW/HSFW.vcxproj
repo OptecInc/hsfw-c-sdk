@@ -150,12 +150,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\hidapi\hidapi\hidapi.h" />
-    <ClInclude Include="..\..\include\HSFW.h" />
+    <ClInclude Include="..\..\include\libhsfw.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\HSFW.c" />
+    <ClCompile Include="..\..\src\libhsfw.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\HidAPI\windows\hidapi.vcxproj">

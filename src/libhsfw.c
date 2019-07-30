@@ -5,7 +5,7 @@ extern "C"
 
 #include <stdlib.h>
 #include <string.h>
-#include "HSFW.h"
+#include "libhsfw.h"
 
 #define report_clear_error 2
 #define report_status 10
@@ -14,7 +14,7 @@ extern "C"
 #define home_command 21
 #define flashops_command 22
 
-#define flash_set_defualt_names 1
+#define flash_set_default_names 1
 #define flash_update_filter_name 2
 #define flash_read_filter_name 3
 #define flash_update_wheel_name 4
@@ -42,7 +42,11 @@ extern "C"
 			tmp->vendor_id = cur_dev->vendor_id;
 
 			tmp->serial_number = calloc(sizeof(cur_dev->serial_number) + 1, sizeof(cur_dev->serial_number[0]));
+			#ifdef WIN32
 			tmp->serial_number = _wcsdup(cur_dev->serial_number);
+			#else
+			tmp->serial_number = wcsdup(cur_dev->serial_number);
+			#endif
 			if (cur)
 			{
 				cur->next = tmp;
@@ -85,7 +89,11 @@ extern "C"
 		wheel->product_id = product_id;
 
 		wheel->serial_number = calloc(sizeof(serial_number) + 1, sizeof(serial_number[0]));
+		#ifdef WIN32
 		wheel->serial_number = _wcsdup(serial_number);
+		#else
+		wheel->serial_number = wcsdup(serial_number);
+		#endif
 		return wheel;
 	}
 
