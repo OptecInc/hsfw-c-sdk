@@ -153,7 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="hsfw-app.c" />
+    <ClCompile Include="..\..\src\hsfw-app.c" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -162,9 +162,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\HidAPI\windows\hidapi.vcxproj">
-      <Project>{a107c21c-418a-4697-bb10-20c3aa60e2e4}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\HSFW\HSFW.vcxproj">
       <Project>{fb96a402-e8c6-448c-bbc6-1473a3342df0}</Project>
     </ProjectReference>

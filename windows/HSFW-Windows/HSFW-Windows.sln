@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HSFW-Windows", "HSFW-Windows.vcxproj", "{C58880E8-23CB-418D-AF2E-844B0DB4803C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hidapi", "..\..\..\..\HidAPI\windows\hidapi.vcxproj", "{A107C21C-418A-4697-BB10-20C3AA60E2E4}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HSFW", "..\HSFW\HSFW.vcxproj", "{FB96A402-E8C6-448C-BBC6-1473A3342DF0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hidapi", "..\..\hidapi\windows\hidapi.vcxproj", "{A107C21C-418A-4697-BB10-20C3AA60E2E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,12 +25,6 @@ Global
 		{C58880E8-23CB-418D-AF2E-844B0DB4803C}.Release|x64.Build.0 = Release|x64
 		{C58880E8-23CB-418D-AF2E-844B0DB4803C}.Release|x86.ActiveCfg = Release|Win32
 		{C58880E8-23CB-418D-AF2E-844B0DB4803C}.Release|x86.Build.0 = Release|Win32
-		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Debug|x64.ActiveCfg = Debug|Win32
-		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Debug|x86.ActiveCfg = Debug|Win32
-		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Debug|x86.Build.0 = Debug|Win32
-		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Release|x64.ActiveCfg = Release|Win32
-		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Release|x86.ActiveCfg = Release|Win32
-		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Release|x86.Build.0 = Release|Win32
 		{FB96A402-E8C6-448C-BBC6-1473A3342DF0}.Debug|x64.ActiveCfg = Debug|x64
 		{FB96A402-E8C6-448C-BBC6-1473A3342DF0}.Debug|x64.Build.0 = Debug|x64
 		{FB96A402-E8C6-448C-BBC6-1473A3342DF0}.Debug|x86.ActiveCfg = Debug|Win32
@@ -39,6 +33,12 @@ Global
 		{FB96A402-E8C6-448C-BBC6-1473A3342DF0}.Release|x64.Build.0 = Release|x64
 		{FB96A402-E8C6-448C-BBC6-1473A3342DF0}.Release|x86.ActiveCfg = Release|Win32
 		{FB96A402-E8C6-448C-BBC6-1473A3342DF0}.Release|x86.Build.0 = Release|Win32
+		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Debug|x64.ActiveCfg = Debug|Win32
+		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Debug|x86.Build.0 = Debug|Win32
+		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Release|x64.ActiveCfg = Release|Win32
+		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Release|x86.ActiveCfg = Release|Win32
+		{A107C21C-418A-4697-BB10-20C3AA60E2E4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
