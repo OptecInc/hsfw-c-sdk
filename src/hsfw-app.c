@@ -42,7 +42,7 @@ int main()
 			PrintStatus(&status);
 
 			if (status.error_state != 0) {
-				printf("Clearing Error");
+				printf("Clearing Error\n");
 				clear_error_hsfw(wheel);
 			}
 
