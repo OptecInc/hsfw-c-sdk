@@ -1,3 +1,5 @@
+This source is copyright Optec, Inc. and may not be redistributed.
+
 #ifdef __cplusplus
 extern "C"
 {

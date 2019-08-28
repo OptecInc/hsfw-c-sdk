@@ -1,3 +1,5 @@
+This source is copyright Optec, Inc. and may not be redistributed.
+
 #ifndef HSFW_H
 #define HSFW_H
 

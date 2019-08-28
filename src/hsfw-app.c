@@ -1,3 +1,5 @@
+This source is copyright Optec, Inc. and may not be redistributed.
+
 // HSFW-Windows.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
