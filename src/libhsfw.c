@@ -1,4 +1,4 @@
-This source is copyright Optec, Inc. and may not be redistributed.
+// This source is copyright Optec, Inc. and may not be redistributed.
 
 #ifdef __cplusplus
 extern "C"
@@ -44,7 +44,9 @@ extern "C"
 			tmp->vendor_id = cur_dev->vendor_id;
 
 			tmp->serial_number = calloc(sizeof(cur_dev->serial_number) + 1, sizeof(cur_dev->serial_number[0]));
-			#ifdef WIN32
+			#ifdef _WIN32
+			tmp->serial_number = _wcsdup(cur_dev->serial_number);
+			#elif _WIN64
 			tmp->serial_number = _wcsdup(cur_dev->serial_number);
 			#else
 			tmp->serial_number = wcsdup(cur_dev->serial_number);
@@ -92,6 +94,8 @@ extern "C"
 
 		wheel->serial_number = calloc(sizeof(serial_number) + 1, sizeof(serial_number[0]));
 		#ifdef WIN32
+		wheel->serial_number = _wcsdup(serial_number);
+		#elif _WIN64
 		wheel->serial_number = _wcsdup(serial_number);
 		#else
 		wheel->serial_number = wcsdup(serial_number);

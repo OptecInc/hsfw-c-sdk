@@ -1,4 +1,4 @@
-This source is copyright Optec, Inc. and may not be redistributed.
+// This source is copyright Optec, Inc. and may not be redistributed.
 
 // HSFW-Windows.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
@@ -12,6 +12,8 @@ void PrintStatus(wheel_status* status);
 void PrintDescription(wheel_description* description);
 
 #ifdef WIN32
+#include <windows.h>
+#elif _WIN64
 #include <windows.h>
 #else
 #include <unistd.h>

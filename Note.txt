@@ -1,1 +1,5 @@
 This source is copyright Optec, Inc. and may not be redistributed.
+
+This uses a custom version of HIDAPI (under the BSD license) to communicate with the Optec HSFW. 
+
+The library header file is found in include and the source is in the source folder. Each platform folder has a simple script that builds hsfw-app which is a simple test app. This will be created in the folder with the script. The windows project currently must be built in WIN32 mode only. 
