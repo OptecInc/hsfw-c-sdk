@@ -40,7 +40,7 @@ int main()
 
 			wheel_status status;
 			if (get_hsfw_status(wheel, &status) < 0) {
-				printf("ERROR");
+				printf("ERROR reading status");
 				return 0;
 			}
 			PrintStatus(&status);
@@ -52,24 +52,24 @@ int main()
 
 			wheel_description description;
 			if (get_hsfw_description(wheel, &description) < 0) {
-				printf("ERROR");
+				printf("ERROR reading description");
 				return 0;
 			}
 			PrintDescription(&description);
 
 			if(home_hsfw(wheel)) {
-				printf("ERROR");
+				printf("ERROR homing wheel");
 				return 0;
 			}
 
 			if (get_hsfw_status(wheel, &status) < 0) {
-				printf("ERROR");
+				printf("ERROR reading status");
 				return 0;
 			}
 
 			while (status.is_homing) {
 				if (get_hsfw_status(wheel, &status) < 0) {
-					printf("ERROR");
+					printf("ERROR reading status");
 					return 0;
 				}
 				#ifdef WIN32
@@ -80,24 +80,24 @@ int main()
 			}
 
 			if (get_hsfw_description(wheel, &description) < 0) {
-				printf("ERROR");
+				printf("ERROR reading description");
 				return 0;
 			}
 
 
 			for (int i = description.filter_count; i > 0; i--) {
 				if (move_hsfw(wheel, i)) {
-					printf("ERROR");
+					printf("ERROR moving");
 					return 0;
 				}
 				if (get_hsfw_status(wheel, &status) < 0) {
-					printf("ERROR");
+					printf("ERROR reading status");
 					return 0;
 				}
 
 				while (status.is_moving) {
 					if (get_hsfw_status(wheel, &status) < 0) {
-						printf("ERROR");
+						printf("ERROR reading status");
 						return 0;
 					}
 					#ifdef WIN32
@@ -132,6 +132,10 @@ int main()
 		}
 
 		wheels_free_enumeration(devs);
+	}
+	else 
+	{
+		printf("No HSFW Filter Wheels found");
 	}
 }
 

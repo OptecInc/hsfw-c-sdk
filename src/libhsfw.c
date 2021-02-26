@@ -285,7 +285,7 @@ extern "C"
 		unsigned char clear_error[2] = { 0 };
 		clear_error[0] = 2;
 
-		int res = hid_send_output_report(wheel->handle, clear_error, sizeof(clear_error));
+		int res = hid_write(wheel->handle, clear_error, sizeof(clear_error));
 
 		return 0;
 	}
