@@ -826,6 +826,51 @@ extern "C"
 		return 0;
 	}
 
+	int HSFW_EXPORT HSFW_CALL write_centering_offset_hsfw(hsfw_wheel *wheel, short centering_offset)
+	{
+
+		if (verify_wheel_handle(wheel) != 0)
+		{
+			return INVALID_WHEEL_HANDLE;
+		}
+
+		if(centering_offset < -127 || centering_offset > 127){
+			return INVALID_ARGUMENT;
+		}
+
+				unsigned char data[14] = {0};
+
+		data[0] = flashops_command;
+		data[1] = flash_update_centering_offset;
+		data[2] = centering_offset;
+
+		// Send the initial report
+		int res = hid_send_feature_report(wheel->handle, data, sizeof(data));
+		if (!res)
+			return res;
+
+		res = hid_get_feature_report(wheel->handle, data, sizeof(data));
+		if (!res)
+			return res;
+
+		unsigned char name_code1 = data[1];
+		unsigned char name_code2 = data[2];
+		unsigned char name_code3 = data[3];
+		unsigned char name_code4 = data[4];
+
+		res = hid_get_feature_report(wheel->handle, data, sizeof(data));
+		if (!res)
+			return res;
+
+		if (!(name_code1 == data[1] && name_code1 == flash_update_centering_offset))
+			return INVALID_DEVICE_RESPONSE;
+
+		if (!(name_code2 == data[2] && name_code2 == 0))
+			return INVALID_DEVICE_RESPONSE;
+
+		return 0;
+	}
+
 	const char HSFW_EXPORT HSFW_CALL *get_error_text_hsfw(int error_code){
 		switch (error_code)
 		{

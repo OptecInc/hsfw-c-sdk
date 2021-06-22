@@ -119,6 +119,8 @@ extern "C"
 
 	int HSFW_EXPORT HSFW_CALL restore_default_names_hsfw(hsfw_wheel* wheel);
 
+	int HSFW_EXPORT HSFW_CALL write_centering_offset_hsfw(hsfw_wheel* wheel, short centering_offset);
+
 	int HSFW_EXPORT HSFW_CALL clear_error_hsfw(hsfw_wheel *wheel);
 
 	const char HSFW_EXPORT HSFW_CALL *get_error_text_hsfw(int error_code);
