@@ -39,36 +39,59 @@ int main()
 		if (wheel > 0) {
 
 			wheel_status status;
-			if (get_hsfw_status(wheel, &status) < 0) {
+			int res = get_hsfw_status(wheel, &status);
+			if (res != 0) {
+				printf(get_error_text_hsfw(res));
 				printf("ERROR reading status");
 				return 0;
 			}
 			PrintStatus(&status);
 
 			if (status.error_state != 0) {
-				printf("Clearing Error\n");
+				printf("Found error:\n");
+				printf(get_error_text_hsfw(status.error_state));
+				printf("\nClearing Error\n");
 				clear_error_hsfw(wheel);
 			}
 
+			if (status.is_homed == 0) {
+				res = home_hsfw(wheel);
+				if (res != 0) {
+					printf(get_error_text_hsfw(res));
+					printf("ERROR homing wheel");
+					return 0;
+				}
+			}
+
 			wheel_description description;
-			if (get_hsfw_description(wheel, &description) < 0) {
-				printf("ERROR reading description");
+
+			res = get_hsfw_description(wheel, &description);
+			if (res != 0) {
+
+				printf(get_error_text_hsfw(res));
+				printf("\nERROR reading description");
 				return 0;
 			}
 			PrintDescription(&description);
 
-			if(home_hsfw(wheel)) {
+			res = home_hsfw(wheel);
+			if (res != 0) {
+				printf(get_error_text_hsfw(res));
 				printf("ERROR homing wheel");
 				return 0;
 			}
 
-			if (get_hsfw_status(wheel, &status) < 0) {
+			res = get_hsfw_status(wheel, &status);
+			if (res != 0) {
+				printf(get_error_text_hsfw(res));
 				printf("ERROR reading status");
 				return 0;
 			}
 
 			while (status.is_homing) {
-				if (get_hsfw_status(wheel, &status) < 0) {
+				res = get_hsfw_status(wheel, &status);
+				if (res != 0) {
+					printf(get_error_text_hsfw(res));
 					printf("ERROR reading status");
 					return 0;
 				}
@@ -79,24 +102,33 @@ int main()
 				#endif
 			}
 
-			if (get_hsfw_description(wheel, &description) < 0) {
-				printf("ERROR reading description");
+			res = get_hsfw_description(wheel, &description);
+			if (res != 0) {
+
+				printf(get_error_text_hsfw(res));
+				printf("\nERROR reading description");
 				return 0;
 			}
 
-
 			for (int i = description.filter_count; i > 0; i--) {
-				if (move_hsfw(wheel, i)) {
+				res = move_hsfw(wheel, i);
+				if (res != 0) {
+					printf(get_error_text_hsfw(res));
 					printf("ERROR moving");
 					return 0;
 				}
-				if (get_hsfw_status(wheel, &status) < 0) {
+
+				res = get_hsfw_status(wheel, &status);
+				if (res != 0) {
+					printf(get_error_text_hsfw(res));
 					printf("ERROR reading status");
 					return 0;
 				}
 
 				while (status.is_moving) {
-					if (get_hsfw_status(wheel, &status) < 0) {
+					res = get_hsfw_status(wheel, &status);
+					if (res != 0) {
+						printf(get_error_text_hsfw(res));
 						printf("ERROR reading status");
 						return 0;
 					}
@@ -110,7 +142,12 @@ int main()
 			hsfw_wheel_names names;
 			hsfw_wheel_filters filters;
 
-			int res = read_wheel_names_hsfw(wheel, &names);
+			res = read_wheel_names_hsfw(wheel, &names);
+			if (res != 0) {
+				printf(get_error_text_hsfw(res));
+				printf("ERROR reading names");
+				return 0;
+			}
 
 			for (int i = 0; i < 11; i++) {
 				printf("Wheel: %c %s\n", 'A' + i, names.names[i]);
