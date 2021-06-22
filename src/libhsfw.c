@@ -611,6 +611,40 @@ extern "C"
 		return 0;
 	}
 
+	const char HSFW_EXPORT HSFW_CALL *get_error_text_hsfw(int error_code){
+		switch (error_code)
+		{
+		case INVALID_WHEEL_HANDLE:
+			return "Invalid Wheel Handle. The Wheel could be unplugged or the user may not have permission to access it.";
+		case INVALID_DEVICE_RESPONSE:
+			return "The Wheel responded with an invalid value.";
+		case INVALID_ARGUMENT:
+			return "One of the arguments in invalid for the Wheel. The value could be out of range or unsupported by the current firmware.";
+
+		case DEVICE_ERROR_NONE:
+			return "No Error Set";
+		case DEVICE_ERROR_12V:
+			return "12VDC Power is Disconnected";
+		case DEVICE_ERROR_STALLED :
+			return "Device Stalled During Move or Home Procedure. Verify wheel is inserted and hub tensioner is secure.";
+		case DEVICE_ERROR_PARAMETER:
+			return "Invalid Parameter Received in Output/Feature Report";
+		case DEVICE_ERROR_HOME_WHILE_MOVING:
+			return "Attempted to Home Device While Device is Moving";
+		case DEVICE_ERROR_MOVE_WHILE_MOVING:
+			return "Attempted to Move While Device is Already Moving";
+		case DEVICE_ERROR_NOT_HOMED:
+			return "Attempted to Move Before the Device Has Been Homed";
+		case DEVICE_ERROR_NO_WHEEL:
+			return "No wheel was detected in the device. Verify wheel is inserted and hub tensioner is secure.";
+		case DEVICE_ERROR_NO_WHEELID:
+			return "Unable to determine the WheelID. (Is a magnet missing from wheel?)";
+		
+		default:
+			return "Platform or Unknown error";
+		}
+	}
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
