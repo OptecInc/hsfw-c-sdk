@@ -450,6 +450,87 @@ extern "C"
 		return 0;
 	}
 
+	int HSFW_EXPORT HSFW_CALL write_wheel_name_hsfw(hsfw_wheel* wheel, char wheel_id, char* name)
+	{
+		if (verify_wheel_handle(wheel) != 0)
+		{
+			return INVALID_WHEEL_HANDLE;
+		}
+
+		if (wheel_id < 'A' || wheel_id > 'K')
+			return INVALID_ARGUMENT;
+
+		wheel_description description;
+
+		int res = get_hsfw_description(wheel, &description);
+
+		if (res)
+			return res;
+
+		int fversion = description.firmware_major * 100 + description.firmware_minor * 10 + description.firmware_revision;
+
+		if (!(fversion > 100))
+		{
+			if (wheel_id > 'H')
+			{
+				return INVALID_ARGUMENT;
+			}
+		}
+
+		unsigned char new_name[8] = { 0 };
+		memcpy(new_name, name, 8);
+
+		unsigned char data[14] = { 0 };
+
+		data[0] = flashops_command;
+		data[1] = flash_update_wheel_name;
+		data[2] = wheel_id;
+
+		bool foundzero = false;
+		for (int i = 0; i < 8; i++) {
+			char value = ' ';
+
+			//Pad everything after 0 with space
+			if (new_name[i] == 0) {
+				foundzero = true;
+			}
+			else if (!foundzero) {
+				value = new_name[i];
+			}
+
+			data[i + 4] = value;
+		}
+
+		// Send the initial report
+		res = hid_send_feature_report(wheel->handle, data, sizeof(data));
+		if (!res)
+			return res;
+
+		res = hid_get_feature_report(wheel->handle, data, sizeof(data));
+		if (!res)
+			return res;
+
+		unsigned char name_code1 = data[1];
+		unsigned char name_code2 = data[2];
+		unsigned char name_code3 = data[3];
+		unsigned char name_code4 = data[4];
+
+		res = hid_get_feature_report(wheel->handle, data, sizeof(data));
+		if (!res)
+			return res;
+
+		if (!(name_code1 == data[1] && name_code1 == flash_update_wheel_name))
+			return INVALID_DEVICE_RESPONSE;
+
+		if (!(name_code2 == data[2] && name_code2 == 0))
+			return INVALID_DEVICE_RESPONSE;
+
+		if (!(name_code3 == data[3] && name_code3 == wheel_id))
+			return INVALID_DEVICE_RESPONSE;
+
+		return 0;
+	}
+
 	int HSFW_EXPORT HSFW_CALL read_filter_names_hsfw(hsfw_wheel *wheel, char wheel_id, hsfw_wheel_filters *filters)
 	{
 		memset(filters->names, 0, sizeof(filters->names));
