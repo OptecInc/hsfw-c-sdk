@@ -706,6 +706,22 @@ extern "C"
 		if (wheel_id < 'A' || wheel_id > 'K')
 			return INVALID_ARGUMENT;
 
+		if(position > 8){
+				return INVALID_ARGUMENT;
+		}
+
+		if (wheel_id <= 'E'){
+			if(position > 5){
+				return INVALID_ARGUMENT;
+			}
+		}
+
+		if (wheel_id >= 'I'){
+			if(position > 7){
+				return INVALID_ARGUMENT;
+			}
+		}
+
 		wheel_description description;
 
 		int res = get_hsfw_description(wheel, &description);
