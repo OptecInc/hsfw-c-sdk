@@ -46,8 +46,8 @@ int main()
 				return 0;
 			}
 			PrintStatus(&status);
-
-			write_filter_name_hsfw(wheel, 'A', 1, "Hello");
+			restore_default_names_hsfw(wheel);
+			write_filter_name_hsfw(wheel, 'A', 1, "Hello2");
 
 			if (status.error_state != 0) {
 				printf("Found error:\n");
