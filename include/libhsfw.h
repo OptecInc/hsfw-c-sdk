@@ -24,6 +24,10 @@ extern "C"
 #define HSFW_VID 0x10c4
 #define HSFW_PID 0x82cd
 
+#define INVALID_WHEEL_HANDLE -1
+#define INVALID_DEVICE_RESPONSE -2
+#define INVALID_ARGUMENT -3
+
     struct hsfw_wheel_info
     {
         /** Device Vendor ID */
