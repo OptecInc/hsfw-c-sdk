@@ -191,8 +191,11 @@ extern "C"
 		description->firmware_minor = raw_status[2];
 		description->firmware_revision = raw_status[3];
 
-		if (raw_status[4] < 5 || raw_status[4] > 9)
-			return INVALID_DEVICE_RESPONSE;
+		if (raw_status[4] < 5 || raw_status[4] > 9) {
+			if (raw_status[4] != 0) { //Wheel is not yet homed
+				return INVALID_DEVICE_RESPONSE;
+			}
+		}
 		description->filter_count = raw_status[4];
 
 		description->wheel_id = (char)raw_status[5];
