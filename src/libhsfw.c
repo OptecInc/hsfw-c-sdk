@@ -199,7 +199,7 @@ extern "C"
 		description->filter_count = raw_status[4];
 
 		description->wheel_id = (char)raw_status[5];
-		description->centering_offset = raw_status[6];
+		description->centering_offset = (signed char) raw_status[6];
 
 		return 0;
 	}
