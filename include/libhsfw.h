@@ -113,6 +113,8 @@ extern "C"
 	int HSFW_EXPORT HSFW_CALL read_filter_names_hsfw(hsfw_wheel *wheel, char wheel_id, hsfw_wheel_filters *filters);
 	int HSFW_EXPORT HSFW_CALL read_filter_name_hsfw(hsfw_wheel *wheel, char wheel_id, unsigned short position, char *name);
 
+	int HSFW_EXPORT HSFW_CALL write_filter_name_hsfw(hsfw_wheel *wheel, char wheel_id, unsigned short position, char *name);
+
 	int HSFW_EXPORT HSFW_CALL clear_error_hsfw(hsfw_wheel *wheel);
 
 	const char HSFW_EXPORT HSFW_CALL *get_error_text_hsfw(int error_code);

@@ -47,6 +47,8 @@ int main()
 			}
 			PrintStatus(&status);
 
+			write_filter_name_hsfw(wheel, 'A', 1, "Hello");
+
 			if (status.error_state != 0) {
 				printf("Found error:\n");
 				printf(get_error_text_hsfw(status.error_state));
@@ -157,6 +159,7 @@ int main()
 				res = read_filter_names_hsfw(wheel, 'A' + i, &filters);
 
 				for (int j = 0; j < 8; j++) {
+
 					printf("\t Filter %d: - %s\n", j + 1, filters.names[j]);
 				}
 			}
