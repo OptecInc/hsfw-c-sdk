@@ -64,20 +64,26 @@ extern "C"
 
 	typedef struct
 	{
+		/** A set of 0 terminated names for Wheels A-K indexed from A=0*/
 		char names[11][9];
 	} hsfw_wheel_names;
 
 	typedef struct
 	{
+		/** A set of 0 terminated names for for filter slots 1-8*/
 		char names[8][9];
 	} hsfw_wheel_filters;
 
 	typedef struct
 	{
 		short report_id;
+		/** True if the Wheel is homed*/
 		bool is_homed;
+		/** True if the Wheel is homing*/
 		bool is_homing;
+		/** True if the Wheel is moving*/
 		bool is_moving;
+		/** The current position of the Wheel*/
 		short position;
 		short error_state;
 	} wheel_status;

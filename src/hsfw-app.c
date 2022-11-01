@@ -47,7 +47,6 @@ int main()
 			}
 			PrintStatus(&status);
 			restore_default_names_hsfw(wheel);
-			write_filter_name_hsfw(wheel, 'A', 1, "Hello2");
 
 			if (status.error_state != 0) {
 				printf("Found error:\n");
@@ -141,9 +140,11 @@ int main()
 					#endif
 				}
 			}
+
 			hsfw_wheel_names names;
 			hsfw_wheel_filters filters;
 
+			//Read all names for the specified wheel
 			res = read_wheel_names_hsfw(wheel, &names);
 			if (res != 0) {
 				printf(get_error_text_hsfw(res));
@@ -151,15 +152,17 @@ int main()
 				return 0;
 			}
 
+			//For each wheel ID, A-K. You could also load a specific Wheel_ID.
+			//For example, you can read the current wheel_id from get_hsfw_description and then request the names only for that wheel
 			for (int i = 0; i < 11; i++) {
+				//Print the wheel name and ID.
 				printf("Wheel: %c %s\n", 'A' + i, names.names[i]);
 
-
-
+				//Read the filter names for the wheel id
 				res = read_filter_names_hsfw(wheel, 'A' + i, &filters);
 
+				//Print the filter names and number
 				for (int j = 0; j < 8; j++) {
-
 					printf("\t Filter %d: - %s\n", j + 1, filters.names[j]);
 				}
 			}

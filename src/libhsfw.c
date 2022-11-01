@@ -253,7 +253,7 @@ extern "C"
 
 		int res = get_hsfw_description(wheel, &description);
 
-		if (res)
+		if (res != 0)
 			return res;
 
 		if (description.filter_count < position)
