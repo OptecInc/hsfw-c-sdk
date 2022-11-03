@@ -8,9 +8,6 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 
-void PrintStatus(wheel_status* status);
-void PrintDescription(wheel_description* description);
-
 #ifdef WIN32
 #include <windows.h>
 #elif _WIN64
@@ -18,6 +15,10 @@ void PrintDescription(wheel_description* description);
 #else
 #include <unistd.h>
 #endif // WIN32
+
+
+void PrintStatus(wheel_status* status);
+void PrintDescription(wheel_description* description);
 
 
 int main()
