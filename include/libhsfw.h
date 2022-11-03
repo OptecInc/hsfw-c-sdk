@@ -21,6 +21,10 @@ extern "C"
 #define HSFW_CALL	/**< API call macro */
 #endif
 
+#define HSFW_MAJOR_VERSION 0
+#define HSFW_MINOR_VERSION 0
+#define HSFW_PATCH_VERSION 0
+
 #define HSFW_VID 0x10c4
 #define HSFW_PID 0x82cd
 
@@ -45,9 +49,9 @@ extern "C"
 		/** Device Product ID */
 		unsigned short product_id;
 		/** Serial Number */
-		wchar_t *serial_number;
+		wchar_t* serial_number;
 		/** Next available wheel */
-		struct hsfw_wheel_info *next;
+		struct hsfw_wheel_info* next;
 	};
 
 	typedef struct
@@ -57,9 +61,9 @@ extern "C"
 		/** Device Product ID */
 		unsigned short product_id;
 		/** Serial Number */
-		wchar_t *serial_number;
+		wchar_t* serial_number;
 		/** Raw HID handle */
-		hid_device *handle;
+		hid_device* handle;
 	} hsfw_wheel;
 
 	typedef struct
@@ -85,51 +89,116 @@ extern "C"
 		bool is_moving;
 		/** The current position of the Wheel*/
 		short position;
+		/** The current error state of the Wheel*/
 		short error_state;
 	} wheel_status;
 
 	typedef struct
 	{
 		short report_id;
+		/** The wheel major firmware version*/
 		short firmware_major;
+		/** The wheel minor firmware version*/
 		short firmware_minor;
+		/** The wheel revision firmware version*/
 		short firmware_revision;
+		/** The number of filters in the current wheel*/
 		short filter_count;
+		/** The wheel id of the current wheel*/
 		char wheel_id;
+		/** the centering offset of the current wheel*/
 		short centering_offset;
 	} wheel_description;
 
 	typedef struct hsfw_wheel_info hsfw_wheel_info;
 
-	hsfw_wheel_info HSFW_EXPORT *HSFW_CALL enumerate_wheels();
-	void HSFW_EXPORT HSFW_CALL wheels_free_enumeration(hsfw_wheel_info *wheels);
+	/*
+	* Gets an hsfw_wheel_info containing information on attached wheels and a pointer to the next info
+	*/
+	hsfw_wheel_info HSFW_EXPORT* HSFW_CALL enumerate_wheels();
 
-	hsfw_wheel HSFW_EXPORT *HSFW_CALL open_hsfw(unsigned short vendor_id, unsigned short product_id, const wchar_t *serial_number);
-	void HSFW_EXPORT HSFW_CALL close_hsfw(hsfw_wheel *wheel);
+	/*
+	* Frees the hsfw_wheel_info. It should not be used after freeing
+	*/
+	void HSFW_EXPORT HSFW_CALL wheels_free_enumeration(hsfw_wheel_info* wheels);
+
+	/*
+	* Opens the specified HSFW, returning a struct with a handle and wheel info
+	*/
+	hsfw_wheel HSFW_EXPORT* HSFW_CALL open_hsfw(unsigned short vendor_id, unsigned short product_id, const wchar_t* serial_number);
+	/*
+	* Closes the HSFW connection and frees the associated memory
+	*/
+	void HSFW_EXPORT HSFW_CALL close_hsfw(hsfw_wheel* wheel);
+	/*
+	* This cleans up any memory used by libhsfw or hidapi. The library may not be used after this is called.
+	*/
 	void HSFW_EXPORT exit_hsfw();
-	int HSFW_EXPORT HSFW_CALL get_hsfw_status(hsfw_wheel *wheel, wheel_status *status);
-	int HSFW_EXPORT HSFW_CALL get_hsfw_description(hsfw_wheel *wheel, wheel_description *description);
+	/*
+	* Gets the HSFW status struct of the HSFW, status values can change frequently. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL get_hsfw_status(hsfw_wheel* wheel, wheel_status* status);
+	/*
+	* Gets the description struct of the HSFW, description changes infrequently. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL get_hsfw_description(hsfw_wheel* wheel, wheel_description* description);
 
-	int HSFW_EXPORT HSFW_CALL home_hsfw(hsfw_wheel *wheel);
-	int HSFW_EXPORT HSFW_CALL move_hsfw(hsfw_wheel *wheel, unsigned short position);
+	/*
+	* Homes the specified wheel. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL home_hsfw(hsfw_wheel* wheel);
+	/*
+	* Homes the specified wheel. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL move_hsfw(hsfw_wheel* wheel, unsigned short position);
 
-	int HSFW_EXPORT HSFW_CALL read_wheel_names_hsfw(hsfw_wheel *wheel, hsfw_wheel_names *names);
-	int HSFW_EXPORT HSFW_CALL read_wheel_name_hsfw(hsfw_wheel *wheel, char wheel_id, char *name);
+	/*
+	* Reads all wheel names, pass in an existing names struct. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL read_wheel_names_hsfw(hsfw_wheel* wheel, hsfw_wheel_names* names);
+	/*
+	* Reads the wheel name for the specified ID, pass in a char array of at least 9 characters. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL read_wheel_name_hsfw(hsfw_wheel* wheel, char wheel_id, char* name);
 
+	/*
+	* Writes a wheel name for the given ID, names are 8 characters long. A return of 0 indicates success, any other value indicates an error.
+	*/
 	int HSFW_EXPORT HSFW_CALL write_wheel_name_hsfw(hsfw_wheel* wheel, char wheel_id, char* name);
 
-	int HSFW_EXPORT HSFW_CALL read_filter_names_hsfw(hsfw_wheel *wheel, char wheel_id, hsfw_wheel_filters *filters);
-	int HSFW_EXPORT HSFW_CALL read_filter_name_hsfw(hsfw_wheel *wheel, char wheel_id, unsigned short position, char *name);
+	/*
+	* Reads all filter names for a given wheel, pass in an existing names struct. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL read_filter_names_hsfw(hsfw_wheel* wheel, char wheel_id, hsfw_wheel_filters* filters);
+	/*
+	* Reads the filter name for the specified ID and position, pass in a char array of at least 9 characters. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL read_filter_name_hsfw(hsfw_wheel* wheel, char wheel_id, unsigned short position, char* name);
 
-	int HSFW_EXPORT HSFW_CALL write_filter_name_hsfw(hsfw_wheel *wheel, char wheel_id, unsigned short position, char *name);
+	/*
+	* Writes a filter name for the given ID and position, names are 8 characters long. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL write_filter_name_hsfw(hsfw_wheel* wheel, char wheel_id, unsigned short position, char* name);
 
+	/*
+	* Restores all names to default. A return of 0 indicates success, any other value indicates an error.
+	*/
 	int HSFW_EXPORT HSFW_CALL restore_default_names_hsfw(hsfw_wheel* wheel);
 
+	/*
+	* Sets a centering offset for a HSFW. Valid values are -127 to 127. A return of 0 indicates success, any other value indicates an error.
+	*/
 	int HSFW_EXPORT HSFW_CALL write_centering_offset_hsfw(hsfw_wheel* wheel, short centering_offset);
 
-	int HSFW_EXPORT HSFW_CALL clear_error_hsfw(hsfw_wheel *wheel);
+	/*
+	* Clear the currently set error. A return of 0 indicates success, any other value indicates an error.
+	*/
+	int HSFW_EXPORT HSFW_CALL clear_error_hsfw(hsfw_wheel* wheel);
 
-	const char HSFW_EXPORT HSFW_CALL *get_error_text_hsfw(int error_code);
+	/*
+	* Get the corresponding text for an HSFW error code. 
+	*/
+	const char HSFW_EXPORT HSFW_CALL* get_error_text_hsfw(int error_code);
 
 #ifdef __cplusplus
 }
