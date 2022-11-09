@@ -25,20 +25,25 @@ int main()
 {
 	hsfw_wheel_info *devs, *cur_dev;
 
+	// Get all wheels on the current system
 	devs = enumerate_wheels();
 	cur_dev = devs;
+
+	// Iterate over devices and report them
 	while (cur_dev) {
 		printf("Device Found - type: %04hx %04hx serial_number: %ls\n",cur_dev->vendor_id, cur_dev->product_id, cur_dev->serial_number);
 
 		cur_dev = cur_dev->next;
 	}
 
+	// If there is a device lets use it 
 	if (devs != NULL)
 	{
-
+		// Open the wheel
 		hsfw_wheel* wheel = open_hsfw(devs->vendor_id, devs->product_id, devs->serial_number);
 		if (wheel > 0) {
 
+			// Get and print the status
 			wheel_status status;
 			int res = get_hsfw_status(wheel, &status);
 			if (res != 0) {
@@ -47,8 +52,11 @@ int main()
 				return 0;
 			}
 			PrintStatus(&status);
+
+			// Restore names
 			restore_default_names_hsfw(wheel);
 
+			// If an error state is set print it and print it
 			if (status.error_state != 0) {
 				printf("Found error:\n");
 				printf(get_error_text_hsfw(status.error_state));
@@ -56,6 +64,7 @@ int main()
 				clear_error_hsfw(wheel);
 			}
 
+			// If not homed, home the wheel
 			if (status.is_homed == 0) {
 				res = home_hsfw(wheel);
 				if (res != 0) {
@@ -65,6 +74,7 @@ int main()
 				}
 			}
 
+			//Read and print the descriptions
 			wheel_description description;
 
 			res = get_hsfw_description(wheel, &description);
@@ -90,6 +100,7 @@ int main()
 				return 0;
 			}
 
+			//Home wheel and wait for it to finish
 			while (status.is_homing) {
 				res = get_hsfw_status(wheel, &status);
 				if (res != 0) {
@@ -112,6 +123,8 @@ int main()
 				return 0;
 			}
 
+
+			//Cycle to all filters, waiting for each move to finish
 			for (int i = description.filter_count; i > 0; i--) {
 				res = move_hsfw(wheel, i);
 				if (res != 0) {
@@ -168,7 +181,9 @@ int main()
 				}
 			}
 
+			//Close the open wheel
 			close_hsfw(wheel);
+			//Release the library and exit
 			exit_hsfw();
 		}
 		else{
@@ -200,14 +215,3 @@ void PrintDescription(wheel_description* description) {
 	printf("Wheel ID: %c\n", description->wheel_id);
 	printf("Centering Offset: %d\n", description->centering_offset);
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
