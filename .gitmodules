@@ -1,3 +1,0 @@
-[submodule "hidapi"]
-	path = hidapi
-	url = git@github.com:OptecInc/hidapi.git
